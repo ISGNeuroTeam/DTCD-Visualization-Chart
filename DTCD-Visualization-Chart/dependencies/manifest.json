@@ -1,0 +1,16 @@
+[
+  {
+    "name": "Vue",
+    "fileName": "vue.js",
+    "type": "esm",
+    "version": "2.6.12",
+    "source": "https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.12/vue.esm.browser.min.js"
+  },
+  {
+    "name": "D3",
+    "fileName": "d3.js",
+    "type": "iife",
+    "version": "7.1.1",
+    "source": "https://cdnjs.cloudflare.com/ajax/libs/d3/7.1.1/d3.min.js"
+  }
+]

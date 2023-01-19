@@ -1,0 +1,87 @@
+/**
+ * This file contains the basic system color vars.
+ * You must import this file to use vars.
+ * NOTE: Vars with the postfix '-rgb' are strings in the fornat 'RRR, GGG, BBB'.
+ */
+
+/** Primary colors. */
+
+$main_bg: var(--main_bg);
+$main_bg-rgb: var(--main_bg-rgb);
+
+$secondary_bg: var(--secondary_bg);
+$secondary_bg-rgb: var(--secondary_bg-rgb);
+
+$main_border: var(--main_border);
+$main_border-rgb: var(--main_border-rgb);
+
+$secondary_border: var(--secondary_border);
+$secondary_border-rgb: var(--secondary_border-rgb);
+
+$main_text: var(--main_text);
+$main_text-rgb: var(--main_text-rgb);
+
+$secondary_text: var(--secondary_text);
+$secondary_text-rgb: var(--secondary_text-rgb);
+
+$title: var(--title);
+$title-rgb: var(--title-rgb);
+
+$primary_button: var(--primary_button);
+$primary_button-rgb: var(--primary_button-rgb);
+
+$primary_button_hover: var(--primary_button_hover);
+$primary_button_hover-rgb: var(--primary_button_hover-rgb);
+
+$accent_ui_color: var(--accent_ui_color);
+$accent_ui_color-rgb: var(--accent_ui_color-rgb);
+
+$ok_color: var(--ok_color);
+$ok_color-rgb: var(--ok_color-rgb);
+
+$wrong_color: var(--wrong_color);
+$wrong_color-rgb: var(--wrong_color-rgb);
+
+$error_color: var(--error_color);
+$error_color-rgb: var(--error_color-rgb);
+
+/** Secondary colors. */
+
+$grass: var(--grass);
+$grass-rgb: var(--grass-rgb);
+
+$forest: var(--forest);
+$forest-rgb: var(--forest-rgb);
+
+$blue: var(--blue);
+$blue-rgb: var(--blue-rgb);
+
+$plum: var(--plum);
+$plum-rgb: var(--plum-rgb);
+
+$purple: var(--purple);
+$purple-rgb: var(--purple-rgb);
+
+$orange: var(--orange);
+$orange-rgb: var(--orange-rgb);
+
+$peach: var(--peach);
+$peach-rgb: var(--peach-rgb);
+
+$raspberry: var(--raspberry);
+$raspberry-rgb: var(--raspberry-rgb);
+
+$coral: var(--coral);
+$coral-rgb: var(--coral-rgb);
+
+$beet: var(--beet);
+$beet-rgb: var(--beet-rgb);
+
+$sun: var(--sun);
+$sun-rgb: var(--sun-rgb);
+
+$kiwi: var(--kiwi);
+$kiwi-rgb: var(--kiwi-rgb);
+
+$sea: var(--sea);
+$sea-rgb: var(--sea-rgb);
