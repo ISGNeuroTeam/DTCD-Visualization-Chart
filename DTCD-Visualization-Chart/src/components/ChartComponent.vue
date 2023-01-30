@@ -89,7 +89,7 @@ export default {
     },
     type: {
       type: Object,
-      default: '',
+      default: 'time',
     },
     useGroups: {
       type: Boolean,
@@ -308,7 +308,6 @@ export default {
         width,
         height:  newHeight,
       };
-      console.log('box', box);
       return box
     },
 

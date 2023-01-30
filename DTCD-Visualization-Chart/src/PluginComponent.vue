@@ -40,7 +40,7 @@ export default {
     theme: {},
     options:{},
     curves:{},
-    type: '',
+    type: 'time',
     useGroups: true,
     timeFormat: '%d.%m.%y %H:%M',
     xAxisCaptionRotate: 45,
@@ -89,7 +89,7 @@ export default {
       const serviceFields = [
         '_header',
         '_curves',
-        '_scaletype',
+        '_scaleType',
         '_useGroups',
         '_timeFormat',
         '_xAxisCaptionRotate',
@@ -117,21 +117,20 @@ export default {
       this.dataset = data.reduce((acc, item) => {
         if (!!(this.isServiceFields(item))) {
           this.title = this.titleFromConfig || item?._header || ''
-          this.curves = JSON.parse(item?._curves?.replaceAll("'", '"')) || '';
-          this.type = item._scaleType
+          this.curves = item?._curves ? JSON.parse(item?._curves?.replaceAll("'", '"')) : {};
+          this.type = item._scaleType || 'time'
           this.useGroups = item?._useGroups || false
           this.timeFormat = item?._timeFormat || '%d.%m.%y %H:%M';
           this.xAxisCaptionRotate = this.isCorrectTextAngle(item?._xAxisCaptionRotate)
             ? item._xAxisCaptionRotate
             : 45;
-          this.yAxisLink = JSON.parse(item._yAxisLinks?.replaceAll("'", '"'));
+          this.yAxisLink = item._yAxisLinks ? JSON.parse(item._yAxisLinks?.replaceAll("'", '"')) : {};
           this.hideXAxis = item?._hideXAxis || false
           this.hideYAxis = item?._hideYAxis || false
           this.xMetric = item?._xMetric || ''
-          this.showPeakDots = JSON?.parse(item?._showPeakDots?.replaceAll("'", '"')) || {};
-          this.peakTextData = JSON?.parse(item?._peakTextData?.replaceAll("'", '"')) || [];
+          this.showPeakDots = item?._showPeakDots ? JSON?.parse(item?._showPeakDots?.replaceAll("'", '"')) : {};
+          this.peakTextData = item?._peakTextData ? JSON?.parse(item?._peakTextData?.replaceAll("'", '"')) : [];
           this.zoomType = item?._zoomType || 'x'
-
         }
         if (!(this.isServiceFields(item))) {
           return [...acc, item]

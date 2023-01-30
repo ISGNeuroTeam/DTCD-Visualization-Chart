@@ -527,7 +527,6 @@ export default class ChartClass {
     if (!selection || selection?.length < 0) {
       return
     }
-    console.log('selection', selection);
     if (selection[0]?.length > 0) {
       if (selection[1]?.length > 0) {
         selectionX.push(selection[0][0], selection[1][0])
@@ -562,7 +561,6 @@ export default class ChartClass {
         }
       }, {}) || {}
     }
-    console.log('rangeY', rangeY);
       this.setZoom(rangeX || [], rangeY || {})
 
       if (this.onZoomCb) {
