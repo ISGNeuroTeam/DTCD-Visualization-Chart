@@ -16,6 +16,7 @@
     :xMetricFromData="xMetric"
     :showPeakDots="showPeakDots"
     :peakTextData="peakTextData"
+    :zoomType="zoomType"
    />
   </div>
 </template>
@@ -49,6 +50,7 @@ export default {
     xMetric: '',
     showPeakDots: {},
     peakTextData: [],
+    zoomType: 'x',
 
 
     title: '',
@@ -97,6 +99,7 @@ export default {
         '_xMetricFromData',
         '_showPeakDots',
         '_peakTextData',
+        '_zoomType',
       ]
      return serviceFields.reduce((acc, field) => {
        return Object.keys(item).includes(field) || acc
@@ -119,14 +122,15 @@ export default {
           this.useGroups = item?._useGroups || false
           this.timeFormat = item?._timeFormat || '%d.%m.%y %H:%M';
           this.xAxisCaptionRotate = this.isCorrectTextAngle(item?._xAxisCaptionRotate)
-            ? item?._xAxisCaptionRotate
+            ? item._xAxisCaptionRotate
             : 45;
-          this.yAxisLink = JSON.parse(item._yAxisLinks.replaceAll("'", '"'));
+          this.yAxisLink = JSON.parse(item._yAxisLinks?.replaceAll("'", '"'));
           this.hideXAxis = item?._hideXAxis || false
           this.hideYAxis = item?._hideYAxis || false
           this.xMetric = item?._xMetric || ''
-          this.showPeakDots = JSON?.parse(item?._showPeakDots.replaceAll("'", '"')) || {};
-          this.peakTextData = JSON?.parse(item?._peakTextData.replaceAll("'", '"')) || [];
+          this.showPeakDots = JSON?.parse(item?._showPeakDots?.replaceAll("'", '"')) || {};
+          this.peakTextData = JSON?.parse(item?._peakTextData?.replaceAll("'", '"')) || [];
+          this.zoomType = item?._zoomType || 'x'
 
         }
         if (!(this.isServiceFields(item))) {

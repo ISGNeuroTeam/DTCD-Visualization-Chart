@@ -20,7 +20,8 @@ export default class ChartClass {
       hideXAxis: false,
     },
     hideYAxis: false,
-    curves:{}
+    curves:{},
+    zoomType: 'xy',
   }
 
   box = {
@@ -61,6 +62,13 @@ export default class ChartClass {
   xMinMax = [];
 
   theme = null;
+
+
+
+  zoom = {
+    x: [],
+    y: {},
+  };
 
   constructor(svgContainer, width, height, theme, options, linesRegression) {
     this.id = ChartClass.objId += 1;
@@ -129,8 +137,8 @@ export default class ChartClass {
     const barWidth = this.bandX?.bandwidth() || 30;
     const scaleFuncName = ChartClass
       .capitalizeFirstLetter(type, 'scale?');
-    const xMin = d3.min(this.data.map((item) => item[this.xMetric]));
-    const xMax = d3.max(this.data.map((item) => item[this.xMetric]));
+    const xMin = this.zoom?.x[0] || d3.min(this.data.map((item) => item[this.xMetric]));
+    const xMax = this.zoom?.x[1] || d3.max(this.data.map((item) => item[this.xMetric]));
     let offset = 0;
     if (this.hasBarplot) {
       offset = ((xMax - xMin) / this.data.length) / 1.8;
@@ -171,7 +179,8 @@ export default class ChartClass {
       .call(
         d3.axisBottom(this.x)
         .tickFormat(this.xTickFormat.bind(this))
-        .ticks(ticksEnabled ? ticks : null),
+        .ticks(ticksEnabled ? ticks : null)
+        .tickValues((ticksEnabled && ticks === 0) ? this.data.map((item) => `${item[this.xMetric]}`) : null),
       );
 
       const rotate = options.xAxis.textRotate ? ` rotate(${options.xAxis.textRotate})` : '';
@@ -260,7 +269,6 @@ export default class ChartClass {
       let maxYBarMetric = 0;
       const barplotMetrics = metrics.filter((metric) => metric.type === 'barplot');
 
-
       if (barplotType === 'accumulation') {
         this.data.forEach((item) => {
           let up = 0;
@@ -310,15 +318,19 @@ export default class ChartClass {
 
         const extendMetrics = linearMetrics.filter(({yAxisLink}) => yAxisLink === metric.name);
 
-        let min = d3.min(this.data, (d) => d[metric.name]);
+        let min = this.zoom.y[metric.name]
+          && this.zoom.y[metric.name][0] || d3.min(this.data, (d) => d[metric.name]);
         // TODO: разобраться с офсетом
         // let max = d3.max(this.data, (d) => d[metric.name]+50);
-        let max = d3.max(this.data, (d) => d[metric.name]);
+        let max = this.zoom.y[metric.name]
+          && this.zoom.y[metric.name][1] || d3.max(this.data, (d) => d[metric.name]);
         let addClassName = '';
 
         extendMetrics.forEach((item) => {
-          const minExt = d3.min(this.data, (d) => d[item.name]);
-          const maxExt = d3.max(this.data, (d) => d[item.name]);
+          const minExt = this.zoom.y[metric.name]
+          && this.zoom.y[metric.name][0] ||d3.min(this.data, (d) => d[item.name]);
+          const maxExt = this.zoom.y[metric.name]
+          && this.zoom.y[metric.name][1] ||d3.max(this.data, (d) => d[item.name]);
           if (minExt < min) min = minExt;
           if (maxExt > max) max = maxExt;
           addClassName += ` axis-y-${item.n}`;
@@ -344,9 +356,7 @@ export default class ChartClass {
         if (this.options.hideYAxis) {
           return;
         }
-        const offset = (
-          axisSide === 'Right'
-        )
+        const offset = (axisSide === 'Right')
           ? xOffset[axisSide]
           : -xOffset[axisSide];
         const yGroup = yGroups[axisSide]
@@ -356,18 +366,18 @@ export default class ChartClass {
         .style('color', this.theme.text_main)
         .call(
           d3[`axis${axisSide}`](this.y[metric.name])
-          .tickFormat((str) => (
-            metric.unit ? `${str} ${metric.unit}` : str
-          ))
-          .ticks(metric.ticks || Math.ceil(groupHeight / 30)),
+            .tickFormat((str) => (
+              metric.unit ? `${str} ${metric.unit}` : str
+            ))
+            .ticks(metric.ticks || Math.ceil(groupHeight / 30)),
         );
 
         if (metric.coloredYAxis) {
           yGroup.selectAll('text').attr('fill', metric.color);
         }
         xOffset[axisSide] += yGroup.node().getBBox().width + 8;
-
       });
+
     if (!this.options.hideYAxis) {
       if (yGroupLabel) {
         // Add Y axis label:
@@ -430,7 +440,7 @@ export default class ChartClass {
       this.addXTickLines(chartGroup, groupHeight);
     }
     if (xSelection) {
-      // this.addBrush(chartGroup, groupHeight);
+      this.addBrush(chartGroup, groupHeight);
     } else {
       this.addCrossSelection(chartGroup, groupHeight);
     }
@@ -510,25 +520,58 @@ export default class ChartClass {
     this.onClickCb = cb;
   }
 
-  zoomChart() {
-    // this.tooltipHide = false;
-    const { selection } = d3.event;
-    if (selection && this.x) {
+  zoomChart({selection}) {
+    this.tooltipHide = false;
+    const selectionX = []
+    const selectionY = []
+    if (!selection || selection?.length < 0) {
+      return
+    }
+    console.log('selection', selection);
+    if (selection[0]?.length > 0) {
+      if (selection[1]?.length > 0) {
+        selectionX.push(selection[0][0], selection[1][0])
+        selectionY.push(selection[0][1], selection[1][1])
+      }
+    } else if (this.options.zoomType === 'x') {
+      selectionX.push(...selection)
+    } else {
+      selectionY.push(...selection)
+    }
+
+    let rangeX = []
+    if (selectionX && this.x) {
       const { invert } = this.x;
-      const range = selection.map((point) => {
+      rangeX = selectionX.map((point) => {
         let result = invert ? invert(point) : point;
         if (result instanceof Date) {
           result = result.getTime();
         }
         return result;
-      });
+      }) || [];
+    }
+    let rangeY = {}
+    if (selectionY && this.y) {
+      rangeY = Object.keys(this.y).reduce((acc, key) => {
+        const invertY = this.y[key].invert
+        return {
+          ...acc,
+          [key]: selectionY.map((point) => {
+            return invertY ? invertY(point) : point;
+          }).sort((a,b) => a - b)
+        }
+      }, {}) || {}
+    }
+    console.log('rangeY', rangeY);
+      this.setZoom(rangeX || [], rangeY || {})
+
       if (this.onZoomCb) {
-        this.onZoomCb(range);
+        this.onZoomCb({x:rangeX || [], y:rangeY || {}});
       }
       this.brushes.forEach((brush) => {
         this.svg.selectAll('.brush').call(brush.move, null);
       });
-    }
+
     this.hideTooltip();
   }
 
@@ -571,6 +614,7 @@ export default class ChartClass {
     data,
     curves,
     hideYAxis,
+    zoomType,
     xMetric = '_time',
     linesRegression = null,
   ) {
@@ -584,6 +628,7 @@ export default class ChartClass {
     this.options.linesRegression = linesRegression;
     this.options.curves = curves;
     this.options.hideYAxis = hideYAxis;
+    this.options.zoomType = zoomType;
 
     // recalc options
     if (this.options.xAxis.textRotate !== undefined) {
@@ -670,6 +715,12 @@ export default class ChartClass {
 
   set theme(val) {
     this.theme = val;
+  }
+
+  setZoom(rangeX, rangeY) {
+    this.zoom.x = rangeX
+    this.zoom.y = rangeY
+    this.render()
   }
 
   updateMaxYRightAxisWidth(width) {
@@ -795,31 +846,51 @@ export default class ChartClass {
   }
 
   addXTickLines(chartGroup, groupHeight) {
+    const {
+      ticksEnabled,
+      ticks,
+    } = this.options.xAxis;
     chartGroup
-      .append('g')
-      .attr('class', 'vertical-tick-lines')
-      .style('color', this.theme.text_main)
-      .attr('transform', `translate(0,${groupHeight})`)
-      .call(d3.axisBottom(this.x)
-        .tickSize(-groupHeight)
-        .tickFormat((_) => '')
-        .ticks(10))
-      .selectAll('.tick line')
-      .attr('opacity', 0.2);
+    .append('g')
+    .attr('class', 'vertical-tick-lines')
+    .style('color', this.theme.$main_text)
+    .attr('transform', `translate(0,${groupHeight})`)
+    .call(d3.axisBottom(this.x)
+    .tickSize(-groupHeight)
+    .tickFormat((_) => '')
+    .ticks((ticksEnabled && ticks > 0) ? ticks : null)
+    .tickValues((ticksEnabled && ticks === 0) ? this.data.map((item) => `${item[this.xMetric]}`) : null))
+    .selectAll('.tick line')
+    .attr('opacity', 0.2);
     chartGroup
-      .selectAll('g.vertical-tick-lines .domain')
-      .attr('stroke', '#8888');
+    .selectAll('g.vertical-tick-lines .domain')
+    .attr('stroke', '#8888');
   }
 
   addBrush(chartGroup, groupHeight) {
     const { groupsTopOffset } = this.options;
-    const brush = d3.brushX()
+    let brushType = ''
+    switch (this.options.zoomType) {
+      case 'x':
+        brushType = 'brushX';
+        break;
+      case 'y':
+        brushType = 'brushY';
+        break;
+      case 'xy':
+        brushType = 'brush';
+        break;
+      default:
+        brushType = 'brushX';
+    }
+    // const brush = d3.brushX()
+    const brush = d3[brushType]()
       .extent([
         [0, -groupsTopOffset],
         [this.chartWidth, groupHeight],
       ])
-      // .on('start', this.hideTooltip.bind(this))
-      // .on('end', this.zoomChart.bind(this));
+      .on('start', this.hideTooltip.bind(this))
+      .on('end', this.zoomChart.bind(this));
     chartGroup
       .append('g')
       .attr('class', 'brush')
@@ -892,8 +963,8 @@ export default class ChartClass {
         this.updateTooltip(i, metric, tooltipLeftPos, tooltipTopPos);
       })
       .on('mouseout', (d, i, elems) => {
-        // const dotShow = elems[i].classList.contains('dot-show');
-        // d3.select(elems[i]).style('opacity', +dotShow);
+        const dotShow = d.target.classList.contains('dot-show');
+        d3.select(d.target).style('opacity', +dotShow);
         this.hideLineDot();
         this.hideTooltip();
       });
@@ -1051,6 +1122,7 @@ export default class ChartClass {
         }
       });
   }
+
   setCurve(line, curve) {
 
     // TODO: под прямым углом
