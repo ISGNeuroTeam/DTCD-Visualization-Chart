@@ -33,10 +33,9 @@
         <span>Нет данных для отображения</span>
       </div>
       <div
-        style="height: 100%"
         ref="svgContainer"
         class="svg-container"
-        @dblclick="$emit('resetRange')"
+        @dblclick="resetRange()"
       />
 <!--      <div-->
 <!--        v-show="dataRestFrom && dataRestFrom.length"-->
@@ -90,7 +89,7 @@ export default {
     },
     type: {
       type: Object,
-      default: '',
+      default: 'time',
     },
     useGroups: {
       type: Boolean,
@@ -127,6 +126,10 @@ export default {
     peakTextData: {
       type: Array,
       default: () => ([]),
+    },
+    zoomType: {
+      type: String,
+      default: 'x',
     },
 
 
@@ -202,6 +205,7 @@ export default {
         return {
           ...this.options.xAxis,
           allMetrics: this.firstDataRowMetricList,
+          xSelection: true,
         };
       }
       const {
@@ -256,6 +260,8 @@ export default {
           if (this.peakTextData.includes(metricName)) {
             metric.peakTextData = 'data'
             metric.showText = true
+          } else {
+            metric.showText = false
           }
           if (this.showPeakDots[metricName]) {
             metric.showPeakDots = this.showPeakDots[metricName]
@@ -298,10 +304,11 @@ export default {
       // };
       let newHeight = height - legendHeight
       newHeight -= !this.hideXAxis ? addedSpaceForXAxis : 0
-      return {
+      const box = {
         width,
         height:  newHeight,
       };
+      return box
     },
 
     color() {
@@ -364,6 +371,7 @@ export default {
       this.chart = new ChartClass(this.$refs.svgContainer, width, height, this.theme, {
         useGroups: !!this.useGroups,
         xAxis: {
+          xSelection: true,
           hideXAxis: this.hideXAxis,
           type: this.type, // linear, time, - log, point, band
           timeFormat: this.timeFormat,
@@ -371,6 +379,7 @@ export default {
         },
         curves: this.curves,
         hideYAxis: this.hideYAxis,
+        zoomType: this.zoomType,
       });
       this.chart.onZoom((range) => {
         this.$emit('SetRange', {
@@ -383,50 +392,36 @@ export default {
         this.setClick(range, 'click');
       });
     },
-
+    resetRange() {
+      this.chart.setZoom([0,0], {})
+    },
     setClick(point, actionName) {
-      if (!this.tokensStore) {
-        return;
-      }
-      const { id, idDash } = this;
-      const tokens = this.tokensStore
-      .filter(({ elem, action }) => (elem === id && action === actionName));
+      // if (!this.tokensStore) {
+      //   return;
+      // }
       const values = {
         pointX: point[0],
         pointY: point[1],
         start: point[0],
         end: point[1],
       };
-      tokens.forEach(({ action, name, capture }) => {
-        const token = {
-          name,
-          action,
-          capture,
-          filterParam: this.xMetric,
-        };
-        this.$store.commit('setTocken', {
-          token,
-          value: values[capture],
-          idDash,
-        });
-      });
-      const events = this.eventsStore({
-        idDash,
-        event: 'onclick',
-        partelement: 'point',
-      });
-      events.forEach(({ event }) => {
-        if (event.action === 'set') {
-          this.$store.commit('letEventSet', { idDash, events });
-        } else if (event.action === 'go' && actionName !== 'select') {
-          this.$store.dispatch('letEventGo', {
-            idDash,
-            event,
-            store: this.$store,
-            route: this.$router,
-          });
-        }
-      });
+      // const events = this.eventsStore({
+      //   idDash,
+      //   event: 'onclick',
+      //   partelement: 'point',
+      // });
+      // events.forEach(({ event }) => {
+      //   if (event.action === 'set') {
+      //     this.$store.commit('letEventSet', { idDash, events });
+      //   } else if (event.action === 'go' && actionName !== 'select') {
+      //     this.$store.dispatch('letEventGo', {
+      //       idDash,
+      //       event,
+      //       store: this.$store,
+      //       route: this.$router,
+      //     });
+      //   }
+      // });
     },
 
     eventsStore({ event, partelement }) {
@@ -462,6 +457,7 @@ export default {
         this.dataRestFrom,
         this.curves,
         this.hideYAxis,
+        this.zoomType,
         this.xMetric,
       );
     },
@@ -556,7 +552,6 @@ export default {
 }
 .svg-container {
   position: relative;
-  min-height: 100%;
 }
 
 .x-metric-text {
