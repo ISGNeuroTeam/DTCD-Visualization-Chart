@@ -29,7 +29,11 @@
           </div>
         </template>
       </div>
-      <div v-if="!dataRestFrom ||  dataRestFrom.length === 0">
+      <div 
+        v-if="!dataRestFrom ||  dataRestFrom.length === 0" 
+        class="NoData"
+      >
+        <span class="FontIcon name_infoCircleOutline Icon"></span>
         <span>Нет данных для отображения</span>
       </div>
       <div
@@ -548,7 +552,9 @@ export default {
 <style lang="scss" scoped>
 @import "../scss/_colors";
 .chart-container {
-  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
 }
 .svg-container {
   position: relative;
@@ -575,6 +581,22 @@ export default {
     width: 10px;
     height: 10px;
     margin-right: 4px;
+  }
+}
+.NoData {
+  position: absolute;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  color: var(--text_secondary);
+  
+  .Icon {
+    color: var(--border_secondary);
+    font-size: 100px;
+    margin-bottom: 8px;
   }
 }
 </style>
