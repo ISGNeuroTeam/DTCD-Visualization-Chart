@@ -153,11 +153,12 @@ export default {
   width: 100%;
   height: 100%;
   padding: 10px;
+  display: flex;
+  flex-direction: column;
   .title {
     color: var(--text_main);
     font-size: 18px;
     font-weight: 700;
-    line-height: 1.4;
     padding-bottom: 10px;
   }
 }

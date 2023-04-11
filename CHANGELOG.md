@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - icon and styles if no data in panel
 - the displaying of title
 
+### Removed  
+
+- scrolling of panel
+
 ## [0.1.0]
 
 ### Added

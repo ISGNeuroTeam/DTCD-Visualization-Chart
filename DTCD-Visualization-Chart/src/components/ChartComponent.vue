@@ -568,7 +568,6 @@ export default {
   text-align: left;
   cursor: pointer;
   font-size: 14px;
-  min-height: 30px;
 
   & > div {
     display: inline-block;
