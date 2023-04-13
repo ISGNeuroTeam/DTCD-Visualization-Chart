@@ -150,16 +150,18 @@ export default {
 
 <style lang="scss" scoped>
 .VisualizationMultiline {
-  width: 100%;
-  height: 100%;
-  padding: 10px;
-  display: flex;
-  flex-direction: column;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    justify-content: center;
   .title {
     color: var(--text_main);
-    font-size: 18px;
+    font-size: 17px;
     font-weight: 700;
-    padding-bottom: 10px;
+    padding: 10px 10px 0;
+    padding: 5px 10px;
   }
 }
 

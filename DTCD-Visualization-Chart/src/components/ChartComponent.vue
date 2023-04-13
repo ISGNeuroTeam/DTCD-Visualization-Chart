@@ -1,13 +1,9 @@
 <template>
-  <div
-    style="height: 100%"
-  >
     <div
       :style="customStyle"
       :class="customClass"
       v-bind="$attrs"
       class="chart-container"
-      style="height: 100%"
     >
       <div
         ref="legend"
@@ -55,7 +51,6 @@
   <!--    @save="saveSettings"-->
   <!--    @close="closeSettings"-->
   <!--  />-->
-  </div>
 </template>
 
 
@@ -552,9 +547,7 @@ export default {
 <style lang="scss" scoped>
 @import "../scss/_colors";
 .chart-container {
-  display: flex;
-  flex-direction: column;
-  position: relative;
+  padding: 0px 10px;
 }
 .svg-container {
   position: relative;
@@ -583,15 +576,11 @@ export default {
   }
 }
 .NoData {
-  position: absolute;
   display: flex;
   width: 100%;
-  height: 100%;
   align-items: center;
-  justify-content: center;
   flex-direction: column;
   color: var(--text_secondary);
-  
   .Icon {
     color: var(--border_secondary);
     font-size: 100px;
