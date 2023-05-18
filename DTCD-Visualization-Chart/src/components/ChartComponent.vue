@@ -547,7 +547,11 @@ export default {
 <style lang="scss" scoped>
 @import "../scss/_colors";
 .chart-container {
-  padding: 0px 10px;
+  padding: 10px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 .svg-container {
   position: relative;
@@ -560,7 +564,7 @@ export default {
 .legend {
   text-align: left;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 13px;
 
   & > div {
     display: inline-block;

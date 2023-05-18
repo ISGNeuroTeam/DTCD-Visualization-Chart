@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - icon and styles if no data in panel
 - the displaying of title
+- adaptation of the graph height depending on the presence of title
 
 ### Removed  
 

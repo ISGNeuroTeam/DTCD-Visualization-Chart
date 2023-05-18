@@ -1,5 +1,5 @@
 <template>
-  <div class="VisualizationMultiline" style="height: 100%">
+  <div class="VisualizationMultiline" :style="[title ? {'height': 'calc(100% - 30px)'} : {'height': '100%'}]">
     <div
       v-if="title"
       class="title"
@@ -151,17 +151,17 @@ export default {
 <style lang="scss" scoped>
 .VisualizationMultiline {
     width: 100%;
-    height: 100%;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
-    justify-content: center;
+    font-family: "Proxima Nova", serif;
+    position: relative;
+
   .title {
     color: var(--text_main);
-    font-size: 17px;
+    font-size: 18px;
     font-weight: 700;
+    line-height: 1.4;
     padding: 10px 10px 0;
-    padding: 5px 10px;
   }
 }
 
