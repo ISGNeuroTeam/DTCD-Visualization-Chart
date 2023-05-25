@@ -1,13 +1,9 @@
 <template>
-  <div
-    style="height: 100%"
-  >
     <div
       :style="customStyle"
       :class="customClass"
       v-bind="$attrs"
       class="chart-container"
-      style="height: 100%"
     >
       <div
         ref="legend"
@@ -29,7 +25,11 @@
           </div>
         </template>
       </div>
-      <div v-if="!dataRestFrom ||  dataRestFrom.length === 0">
+      <div 
+        v-if="!dataRestFrom ||  dataRestFrom.length === 0" 
+        class="NoData"
+      >
+        <span class="FontIcon name_infoCircleOutline Icon"></span>
         <span>Нет данных для отображения</span>
       </div>
       <div
@@ -51,7 +51,6 @@
   <!--    @save="saveSettings"-->
   <!--    @close="closeSettings"-->
   <!--  />-->
-  </div>
 </template>
 
 
@@ -548,7 +547,11 @@ export default {
 <style lang="scss" scoped>
 @import "../scss/_colors";
 .chart-container {
-  padding: 15px;
+  padding: 10px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 .svg-container {
   position: relative;
@@ -561,8 +564,7 @@ export default {
 .legend {
   text-align: left;
   cursor: pointer;
-  font-size: 14px;
-  min-height: 30px;
+  font-size: 13px;
 
   & > div {
     display: inline-block;
@@ -575,6 +577,18 @@ export default {
     width: 10px;
     height: 10px;
     margin-right: 4px;
+  }
+}
+.NoData {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  flex-direction: column;
+  color: var(--text_secondary);
+  .Icon {
+    color: var(--border_secondary);
+    font-size: 100px;
+    margin-bottom: 8px;
   }
 }
 </style>

@@ -1,5 +1,10 @@
 <template>
-  <div class="VisualizationMultiline" style="height: 100%">
+  <div class="VisualizationMultiline" :style="[title ? {'height': 'calc(100% - 30px)'} : {'height': '100%'}]">
+    <div
+      v-if="title"
+      class="title"
+      v-text="title"
+    />
    <chart-component
     :panelSize="panelSize"
     :dataRestFrom="dataset"
@@ -144,15 +149,19 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.VisualizationMetrics {
-  width: 100%;
-  height: 100%;
+.VisualizationMultiline {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    font-family: "Proxima Nova", serif;
+    position: relative;
+
   .title {
-    font-weight: 600;
-    font-size: 15px;
-    line-height: 18px;
-    padding: 10px;
     color: var(--text_main);
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.4;
+    padding: 10px 10px 0;
   }
 }
 
